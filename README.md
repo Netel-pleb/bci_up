@@ -1,4 +1,4 @@
-# BCI &#8593;
+# BC&#8593;
 # Project Roadmap: Integration of Pre-Trial Information in Motor Imagery EEG Decoding
 
 ## Introduction
@@ -21,7 +21,7 @@ This project aims to explore the potential of integrating pre-trial EEG data to 
 
 2. **Preprocessing**  
    - Develop preprocessing techniques to clean EEG data, removing EMG and eye blink artifacts while preserving pre-trial information.
-   - Conmore data quality for the pre-trial and trial periods
+   - Compare data quality for the pre-trial and trial periods
    - Use known trial markers to segment and align trials and pre-trial periods for analysis.
 
 3. **Feature Extraction**  
