@@ -6,3 +6,7 @@
 % 3.1. Eye blinks
 % 3.2. Movements 
 % 4. Convert to cvs or json for further analysis in Python
+
+% Load eeglab set from the one created earlier
+eeglab;
+%load('SubjectJ_LRHand.set')
