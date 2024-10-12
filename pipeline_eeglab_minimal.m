@@ -23,3 +23,6 @@ EEG = pop_eegfiltnew(EEG, 'locutoff', 49, 'hicutoff', 51, 'revfilt', 1);  % Notc
 % Re-reference the data to the channel X3
 EEG = pop_reref(EEG, find(strcmp({EEG.chanlocs.labels}, 'X3')));  
 
+% Save for export in csv
+csv_filename = 'SubjectJ_LRHand_notch_filtered.csv';
+csvwrite([export_filepath csv_filename], EEG.data');
