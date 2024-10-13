@@ -1,13 +1,9 @@
-% Pipeline for the data pre-processing
+% Pipeline for the minimal data pre-processing
 % Including:
 % 1. Loading
 % 2. Bandpass filter
 % 3. Re-reference to the ref channel X3
-% 3. Artifact correction / rejection
-% ---- need to decide btw correction and rejection
-% 3.1. Eye blinks
-% 3.2. Movements 
-% 4. Convert to cvs or json for further analysis in Python
+% 4. Convert to cvs for further analysis in Python
 
 % Load eeglab set from the one created earlier
 eeglab;

@@ -23,3 +23,19 @@ EEG = pop_eegfiltnew(EEG, 'locutoff', 49, 'hicutoff', 51, 'revfilt', 1);  % Notc
 % Re-reference the data to the channel X3
 EEG = pop_reref(EEG, find(strcmp({EEG.chanlocs.labels}, 'X3')));  
 
+% clean data using the clean_rawdata plugin
+EEG = pop_clean_rawdata( EEG,'FlatlineCriterion',5,'ChannelCriterion',0.87, ...
+    'LineNoiseCriterion',4,'Highpass',[0.25 0.75] ,'BurstCriterion',20, ...
+    'WindowCriterion',0.25,'BurstRejection','on','Distance','Euclidian', ...
+    'WindowCriterionTolerances',[-Inf 7] ,'fusechanrej',1);
+
+% Run Independent Component Analysis (ICA) to correct for artifacts
+EEG = pop_runica(EEG, 'extended', 1);
+
+% run ICLabel and flag artifactual components
+EEG = pop_iclabel(EEG, 'default');
+EEG = pop_icflag( EEG,[NaN NaN;0.9 1;0.9 1;NaN NaN;NaN NaN;NaN NaN;NaN NaN]);
+
+% Save for export in csv
+csv_filename = [set_name '_reg_proc.csv'];
+writematrix( EEG.data', [data_folder csv_filename]);
