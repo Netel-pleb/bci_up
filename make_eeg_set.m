@@ -1,7 +1,7 @@
-<<<<<<< HEAD
+
 % Load the data
 data_folder = 'D:\BCI\large_eeg_19ch_13subj\';
-subj_file = 'CLA-SubjectJ-170504-3St-LRHand-Inter.mat';  % test for 1 subject for now
+subj_file = 'CLASubjectF1509173StLRHand.mat';  % test for 1 subject for now
 
 load([data_folder subj_file]);  % Load the dataset
 eeglab;
@@ -37,7 +37,7 @@ pop_eegplot(EEG, 1);
 % Save the EEG dataset to EEGLAB format
 EEG = pop_saveset(EEG, 'filename', 'SubjectJ_LRHand.set', 'filepath', data_folder);
 
-=======
+
 % Load the data
 data_folder = 'D:\BCI\large_eeg_19ch_13subj\';
 subj_file = 'CLA-SubjectJ-170504-3St-LRHand-Inter.mat';  % test for 1 subject for now
@@ -79,5 +79,4 @@ pop_eegplot(EEG, 1);
 % Save the EEG dataset to EEGLAB format
 EEG = pop_saveset(EEG, 'filename', 'SubjectJ_LRHand.set', 'filepath', data_folder);
 
->>>>>>> 9f810a4 (add the reference channel name)
 disp('EEG data loaded, structure created, and dataset saved successfully yay!');
