@@ -9,7 +9,7 @@
 eeglab;
 data_folder = 'D:\BCI\HaLT\';
 file_list = dir(fullfile(data_folder, '*.set'));
-% Loop through each .mat file and check for corresponding .set file
+% Loop through each .set file 
 for i = 1:length(file_list)
     set_name = file_list(i).name;
      
