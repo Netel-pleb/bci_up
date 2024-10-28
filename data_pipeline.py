@@ -5,36 +5,42 @@ import psycopg2
 from psycopg2.extras import execute_values
 
 # AWS S3 configuration
-s3 = boto3.client('s3')
+
+s3 = boto3.resource('s3',
+         aws_access_key_id=os.environ.get('AWS_SECRET_KEY_ID'),
+         aws_secret_access_key= os.environ.get('AWS_SECRET_ACCESS_KEY'))
 bucket_name = os.environ.get('S3_EEG_HALT_BUCKET')
 
 # PostgreSQL configuration
 db_params = {
     'host': os.environ.get('DB_HOST'),
-    'database': os.environ.get('BCI_DB_NAME'),
     'user': os.environ.get('DB_USER'),
     'password': os.environ.get('DB_PASSWORD')
 }
 
 def upload_to_s3(file_path, s3_key):
-    try:
-        s3.upload_file(file_path, bucket_name, s3_key)
-        print(f"Uploaded {file_path} to S3")
-    except Exception as e:
-        print(f"Failed to upload {file_path} to S3: {e}")
+    bucket = s3.Bucket(bucket_name)
+    bucket.upload_file(file_path, s3_key)
+    print(f"Uploaded {file_path} to S3")
 
 def create_table(cursor, table_name, columns):
     columns_sql = ', '.join([f"{col} {dtype}" for col, dtype in columns.items()])
     cursor.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({columns_sql})")
     print(f"Created table: {table_name}")
 
+# 
 def insert_data(cursor, table_name, data):
-    columns = data[0].keys()
-    values = [[row[col] for col in columns] for row in data]
-    insert_sql = f"INSERT INTO {table_name} ({', '.join(columns)}) VALUES %s"
-    execute_values(cursor, insert_sql, values)
-    print(f"Inserted {len(data)} rows into {table_name}")
-
+    columns = ', '.join(data.keys())
+    placeholders = ', '.join(['%s'] * len(data))
+    values = tuple(data.values())
+    
+    insert_sql = f"""
+    INSERT INTO {table_name} ({columns})
+    VALUES ({placeholders})
+    """
+    
+    cursor.execute(insert_sql, values)
+    print(f"Inserted 1 row into {table_name}")
 
 
 def process_json_file(file_path):
@@ -44,7 +50,7 @@ def process_json_file(file_path):
     # Upload to S3
     s3_key = os.path.basename(file_path)
     upload_to_s3(file_path, s3_key)
-    
+
     # Create table and insert data
     table_name = os.path.splitext(s3_key)[0]
     # Define the table structure based on the known schema
@@ -60,19 +66,20 @@ def process_json_file(file_path):
         'event_durations': 'INTEGER NOT NULL',
         'event_types': 'INTEGER NOT NULL'
     }
-    # Create table and insert data
-    with psycopg2.connect(**db_params) as conn:
+
+    with psycopg2.connect(
+            host=os.environ.get('DB_HOST'),
+            user=os.environ.get('DB_USER'),
+            password=os.environ.get('DB_PASSWORD')) as conn:
         with conn.cursor() as cur:
             create_table(cur, table_name, columns)
             insert_data(cur, table_name, data)
         conn.commit()
 
+
 def main():
     print("Starting data pipeline")
-    print("DB_HOST:", os.environ.get('DB_HOST'))
-    print("BCI_DB_NAME:", os.environ.get('BCI_DB_NAME'))
-    print("DB_USER:", os.environ.get('DB_USER'))
-    print("DB_PASSWORD:", os.environ.get('DB_PASSWORD'))
+
     json_folder = os.environ.get('EEG_HALT_JSON_FOLDER')
     for filename in os.listdir(json_folder):
         if filename.endswith('.json'):
